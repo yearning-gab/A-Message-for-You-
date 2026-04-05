@@ -19,7 +19,6 @@
 
     .container {
         text-align: center;
-        position: relative;
     }
 
     .note {
@@ -80,40 +79,20 @@
         animation: blink 1s infinite;
     }
 
+    .replay {
+        display: none;
+        margin-top: 10px;
+        background: #3e2f1c;
+    }
+
     @keyframes blink {
         0%, 50%, 100% { opacity: 1; }
         25%, 75% { opacity: 0; }
     }
-
-    /* Overlay for Android autoplay fix */
-    #overlay {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.8);
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 18px;
-        text-align: center;
-        cursor: pointer;
-        z-index: 9999;
-    }
 </style>
 </head>
+
 <body>
-
-<!-- 🎵 Music -->
-<audio id="bgm" loop preload="auto">
-    <source src="all-i-ask.mp3" type="audio/mpeg">
-</audio>
-
-<!-- Overlay for autoplay unlock -->
-<div id="overlay">
-    Tap anywhere to start the message and play music
-</div>
 
 <div class="container">
     <div class="note">click this if you allow me to make things right</div>
@@ -122,7 +101,11 @@
     <div class="card" id="card">
         <div id="text"></div><span class="cursor"></span>
     </div>
+
+    <button class="replay" id="replayBtn" onclick="replay()">Replay</button>
 </div>
+
+<audio id="bgm" src="All I Ask.mp3" loop></audio>
 
 <script>
 const message = `I know I may not have the right to ask for this, especially after everything, but I’m choosing to be honest with you.
@@ -141,7 +124,7 @@ I know trust isn’t something I can demand, but I’m asking for the chance to 
 
 I also understand that you don’t want to see me right now, and I respect that. I won’t force anything. I just hope you can read this with an open heart, and maybe allow a small space for us to try again.
 
-I’m here, fully committed—not just to loving you, but to being someone who can love you the right way.
+I’m here, fully committed—not just to loving you, but to being someone who can love you the right way being the your partner for the rest of our lives.
 
 And if you can find it in you to trust me again, even just a little, I promise I won’t take it for granted this time.`;
 
@@ -162,14 +145,22 @@ function typeWriter() {
         const card = document.getElementById("card");
 
         textEl.innerHTML += message.charAt(i);
+
+        // slow smooth auto-scroll
         smoothScroll(card);
 
         let delay = baseSpeed;
-        if (message.charAt(i) === "\n") delay = 900;
-        else if (message.charAt(i) === "." || message.charAt(i) === ",") delay = 120;
+
+        if (message.charAt(i) === "\n") {
+            delay = 900;
+        } else if (message.charAt(i) === "." || message.charAt(i) === ",") {
+            delay = 120;
+        }
 
         i++;
         setTimeout(typeWriter, delay);
+    } else {
+        document.getElementById("replayBtn").style.display = "inline-block";
     }
 }
 
@@ -177,23 +168,28 @@ function startMessage() {
     if (typing) return;
     typing = true;
 
-    const overlay = document.getElementById("overlay");
-    overlay.style.display = "none"; // remove overlay
-
     const card = document.getElementById("card");
     card.style.display = "block";
-    setTimeout(() => card.classList.add("show"), 50);
 
-    const audio = document.getElementById("bgm");
-    audio.volume = 1;
-    audio.currentTime = 0;
-    audio.play(); // now guaranteed to play after tap
+    setTimeout(() => {
+        card.classList.add("show");
+    }, 50);
+
+    document.querySelector("button").style.display = "none";
+    document.querySelector(".note").style.display = "none";
+
+    document.getElementById("bgm").play();
 
     typeWriter();
 }
 
-// Make overlay clickable anywhere to trigger start
-document.getElementById("overlay").addEventListener("click", startMessage);
+function replay() {
+    const textEl = document.getElementById("text");
+    textEl.innerHTML = "";
+    i = 0;
+    document.getElementById("replayBtn").style.display = "none";
+    typeWriter();
+}
 </script>
 
 </body>

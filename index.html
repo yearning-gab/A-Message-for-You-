@@ -9,7 +9,7 @@
     body {
         margin: 0;
         padding: 0;
-        background: #c7a77d; /* beige/brown like the pic */
+        background: #c7a77d;
         font-family: 'Courier New', monospace;
         display: flex;
         justify-content: center;
@@ -49,8 +49,19 @@
         padding: 20px;
         border-radius: 10px;
         width: 320px;
+        height: 300px;
+        overflow-y: auto;
         text-align: left;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+
+        transform: scale(0.8);
+        opacity: 0;
+        transition: all 0.5s ease;
+    }
+
+    .card.show {
+        transform: scale(1);
+        opacity: 1;
     }
 
     #text {
@@ -66,6 +77,12 @@
         background: #2c2c2c;
         margin-left: 3px;
         animation: blink 1s infinite;
+    }
+
+    .replay {
+        display: none;
+        margin-top: 10px;
+        background: #3e2f1c;
     }
 
     @keyframes blink {
@@ -84,46 +101,93 @@
     <div class="card" id="card">
         <div id="text"></div><span class="cursor"></span>
     </div>
+
+    <button class="replay" id="replayBtn" onclick="replay()">Replay</button>
 </div>
 
+<audio id="bgm" src="All I Ask.mp3" loop></audio>
+
 <script>
-const message = `I know I don’t really have the right to ask for anything from you anymore, but I need to say this.
+const message = `I know I may not have the right to ask for this, especially after everything, but I’m choosing to be honest with you.
 
-I’m truly sorry—for the way I loved you before. I’m sorry if I overwhelmed you, if I made you feel pressured, if I kept trying to hold on too tightly when you needed space. I see now how I overdid things—overexplaining, over-apologizing, trying so hard to prove I was enough—that I ended up making things heavier instead of safer for you. I regret that deeply.
+I’ve taken time to really face myself—my mistakes, my patterns, and the way I showed up before. I’m not running from it anymore. I understand now how I made things heavy, how I let my fears control the way I loved you, and how that may have hurt you or pushed you away. I’m truly sorry for that.
 
-The truth is, I was scared of losing you. And instead of loving you in a calm and steady way, I tried to earn you. I didn’t realize I was already losing myself in the process, and maybe even pushing you further away. I’m really sorry for that.
+But I want you to know this isn’t just words for me. I’ve been working on myself seriously—learning how to handle my emotions better, how to give space without panicking, how to love without losing myself, and how to be steady instead of overwhelming. I’m not perfect, but I’m no longer the same person who made those mistakes.
 
-But I’ve been reflecting a lot. I’ve been trying to understand my mistakes, not just for you, but for myself too. I don’t want to love like that anymore. I want to do better. I want to be better—someone who can love you without pressure, without making you feel like you have to carry anything heavy.
+I’m saying this with confidence now—not desperation—that I can be a better partner. Not just for you, but as a person in general. Someone calmer, more understanding, more secure, and someone who won’t make you feel pressured or suffocated.
 
-And even after everything… I still want you. It’s still you. That hasn’t changed.
+I still want you. I still choose you. And I don’t want to pretend that I’ve moved on when I haven’t.
 
-I miss you in ways I can’t explain. And I hate that things ended like this, knowing I could’ve done better.
+I’m not here to beg blindly—I’m here because I believe in what we had, and I believe I can show up for you in a way I couldn’t before. I want the chance to prove that through my actions, not just my words.
 
-I’m not here to force you or rush you. I just want to ask, from a sincere place—if there’s still even a small part of you that’s open to it, can we try again?
+I know trust isn’t something I can demand, but I’m asking for the chance to rebuild it—starting now, in the present, not stuck in who I used to be. I’m ready to be consistent, patient, and real with you.
 
-I want to make things right this time. Not perfectly, but honestly. Slowly. Genuinely.
+I also understand that you don’t want to see me right now, and I respect that. I won’t force anything. I just hope you can read this with an open heart, and maybe allow a small space for us to try again.
 
-And if you’re not ready, or if you don’t feel the same anymore, I’ll respect that. I just didn’t want to lose you without at least trying to fix what I know I broke.
+I’m here, fully committed—not just to loving you, but to being someone who can love you the right way.
 
-I’m really sorry. And I still choose you.
-
-I also understand that you don’t want to see me right now, and I respect that. I won’t force any conversation or put you in an uncomfortable situation. I just wanted to leave this with you so you can read it whenever you feel ready—no pressure, no expectations. Take all the time you need.`;
+And if you can find it in you to trust me again, even just a little, I promise I won’t take it for granted this time.`;
 
 let i = 0;
-const speed = 20;
+let typing = false;
+const baseSpeed = 45;
+
+function smoothScroll(element) {
+    element.scrollTo({
+        top: element.scrollHeight,
+        behavior: "smooth"
+    });
+}
 
 function typeWriter() {
     if (i < message.length) {
-        document.getElementById("text").innerHTML += message.charAt(i);
+        const textEl = document.getElementById("text");
+        const card = document.getElementById("card");
+
+        textEl.innerHTML += message.charAt(i);
+
+        // slow smooth auto-scroll
+        smoothScroll(card);
+
+        let delay = baseSpeed;
+
+        if (message.charAt(i) === "\n") {
+            delay = 900;
+        } else if (message.charAt(i) === "." || message.charAt(i) === ",") {
+            delay = 120;
+        }
+
         i++;
-        setTimeout(typeWriter, speed);
+        setTimeout(typeWriter, delay);
+    } else {
+        document.getElementById("replayBtn").style.display = "inline-block";
     }
 }
 
 function startMessage() {
-    document.getElementById("card").style.display = "block";
+    if (typing) return;
+    typing = true;
+
+    const card = document.getElementById("card");
+    card.style.display = "block";
+
+    setTimeout(() => {
+        card.classList.add("show");
+    }, 50);
+
     document.querySelector("button").style.display = "none";
     document.querySelector(".note").style.display = "none";
+
+    document.getElementById("bgm").play();
+
+    typeWriter();
+}
+
+function replay() {
+    const textEl = document.getElementById("text");
+    textEl.innerHTML = "";
+    i = 0;
+    document.getElementById("replayBtn").style.display = "none";
     typeWriter();
 }
 </script>

@@ -94,6 +94,11 @@
 
 <body>
 
+<!-- 🎵 MUSIC -->
+<audio id="bgm" loop preload="auto">
+    <source src="Bruno%20Mars%20-%20All%20I%20Ask%20%28Lyrics%29%20%5B4IXG-a60Esg%5D.mp3.mp3" type="audio/mpeg">
+</audio>
+
 <div class="container">
     <div class="note">click this if you allow me to make things right</div>
     <button onclick="startMessage()">Click me</button>
@@ -104,8 +109,6 @@
 
     <button class="replay" id="replayBtn" onclick="replay()">Replay</button>
 </div>
-
-<audio id="bgm" src="All I Ask.mp3" loop></audio>
 
 <script>
 const message = `I know I may not have the right to ask for this, especially after everything, but I’m choosing to be honest with you.
@@ -124,7 +127,7 @@ I know trust isn’t something I can demand, but I’m asking for the chance to 
 
 I also understand that you don’t want to see me right now, and I respect that. I won’t force anything. I just hope you can read this with an open heart, and maybe allow a small space for us to try again.
 
-I’m here, fully committed—not just to loving you, but to being someone who can love you the right way and being the your partner for the rest of our lives. 
+I’m here, fully committed—not just to loving you, but to being someone who can love you the right way.
 
 And if you can find it in you to trust me again, even just a little, I promise I won’t take it for granted this time.`;
 
@@ -146,7 +149,7 @@ function typeWriter() {
 
         textEl.innerHTML += message.charAt(i);
 
-        // slow smooth auto-scroll
+        // 🌊 slow scroll
         smoothScroll(card);
 
         let delay = baseSpeed;
@@ -178,7 +181,19 @@ function startMessage() {
     document.querySelector("button").style.display = "none";
     document.querySelector(".note").style.display = "none";
 
-    document.getElementById("bgm").play();
+    const audio = document.getElementById("bgm");
+    audio.volume = 1;
+    audio.currentTime = 0;
+
+    // 🔥 STRONG Android fix
+    audio.play().then(() => {
+        console.log("Music playing");
+    }).catch(() => {
+        alert("Tap anywhere to enable sound ❤️");
+        document.body.addEventListener("click", () => {
+            audio.play();
+        }, { once: true });
+    });
 
     typeWriter();
 }
